@@ -61,3 +61,11 @@ tbody tr:nth-child(even) {
 tbody tr:nth-child(odd) {
     background-color: #ffffff;
 }
+
+.material-symbols-outlined {
+    font-size: 1em; /* Dopasowanie rozmiaru przycisku do tekstu */
+    padding: 0; /* Usunięcie dodatkowego odstępu */
+    margin: 0; /* Usunięcie marginesów */
+    cursor: pointer; /* Ustawienie wskaźnika jako "ręka" */
+    vertical-align: middle; /* Wyrównanie przycisku do tekstu */
+}

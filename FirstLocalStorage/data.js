@@ -60,6 +60,7 @@ function addItem(event) {
     updateLocalStorage();
     generateReceipt(receiptItems);
     document.getElementById("addItemForm").reset(); // Resetuj formularz
+    document.getElementById("addDialog").close(); // Zamknij dialog
 }
 
 // Funkcja edytująca istniejący element
@@ -138,4 +139,15 @@ function updateLocalStorage() {
 document.getElementById("addItemForm").addEventListener("submit", addItem);
 document.getElementById("editForm").addEventListener("submit", saveEdit);
 document.getElementById("cancelEditBtn").addEventListener("click", cancelEdit);
+
+// Otwórz dialog do dodania produktu po kliknięciu w ikonkę "+"
+document.getElementById("addItemBtn").addEventListener("click", () => {
+    document.getElementById("addDialog").showModal();
+});
+
+// Anulowanie dodawania produktu
+document.getElementById("cancelAddBtn").addEventListener("click", () => {
+    document.getElementById("addDialog").close(); // Zamknij dialog
+});
+
 window.addEventListener("load", () => generateReceipt(receiptItems));
