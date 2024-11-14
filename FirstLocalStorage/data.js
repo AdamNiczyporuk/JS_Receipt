@@ -1,5 +1,6 @@
 // Inicjalizacja paragonu z localStorage
 let receiptItems = JSON.parse(localStorage.getItem("receiptItems")) || [];
+let currentEditIndex = null;  // Dodajemy zmienną do śledzenia edytowanego elementu
 
 // Funkcja generująca paragon
 function generateReceipt(items) {
@@ -24,7 +25,7 @@ function generateReceipt(items) {
                 <span class="material-symbols-outlined" style="cursor: pointer;" onclick="editItem(${index})">
                     edit
                 </span>
-                <span class="material-symbols-outlined" style="cursor: pointer; color: red;" onclick="deleteItem(${index})">
+                <span class="material-symbols-outlined" style="cursor: pointer;" onclick="deleteItem(${index})">
                     delete
                 </span>
             </td>
@@ -45,11 +46,28 @@ function addItem(event) {
     const itemQuantity = parseFloat(document.getElementById("itemQuantity").value);
     const itemPrice = parseFloat(document.getElementById("itemPrice").value);
 
-    receiptItems.push({
-        name: itemName,
-        quantity: itemQuantity,
-        unitPrice: itemPrice
-    });
+    // Walidacja danych
+    if (itemName === "" || isNaN(itemQuantity) || isNaN(itemPrice)) {
+        alert("Wszystkie pola muszą być poprawnie wypełnione.");
+        return;
+    }
+
+    if (currentEditIndex !== null) {
+        // Jeśli edytujemy element, to go aktualizujemy
+        receiptItems[currentEditIndex] = {
+            name: itemName,
+            quantity: itemQuantity,
+            unitPrice: itemPrice
+        };
+        currentEditIndex = null; // Resetujemy indeks edytowanego elementu
+    } else {
+        // Dodajemy nowy element
+        receiptItems.push({
+            name: itemName,
+            quantity: itemQuantity,
+            unitPrice: itemPrice
+        });
+    }
 
     updateLocalStorage();
     generateReceipt(receiptItems);
@@ -60,11 +78,13 @@ function addItem(event) {
 function editItem(index) {
     const item = receiptItems[index];
 
+    // Ustawiamy wartości w formularzu na podstawie elementu, który edytujemy
     document.getElementById("itemName").value = item.name;
     document.getElementById("itemQuantity").value = item.quantity;
     document.getElementById("itemPrice").value = item.unitPrice;
 
-    deleteItem(index); // Usuwamy starą wersję
+    // Ustawiamy indeks edytowanego elementu
+    currentEditIndex = index;
 }
 
 // Funkcja usuwająca element
