@@ -17,10 +17,13 @@ h2
     max-width: 800px;
     margin: 0 auto;
 }
-.Itemcontainer {
+.dialogButtonsContainer
+{ 
     max-width: 800px;
-    margin: 0  auto;
-    margin-bottom: 20px;
+    margin-top: 1rem ;
+    display: flex;  /* Umożliwia układ przycisków w linii */
+    gap: 10px; /* Przerwa między przyciskami */
+    justify-content: center; /* Wyrównanie przycisków na środku */
 }
 
 /* Styl tabeli */

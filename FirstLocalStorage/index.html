@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <link rel="stylesheet" href="data.css" type="text/css" />
-    <title>Paragon</title>
+    <title>Recipt</title>
 </head>
 <body>
-    <h2>Paragon</h2>
+    <h2>Recipt</h2>
     
     <div class="container">
         <table id="receiptTable" border="1" cellpadding="8">
@@ -53,7 +53,7 @@
                 Unit Price:
                 <input type="number" id="itemPrice" step="0.01" min="0.01" required>
             </label>
-            <div class="container">
+            <div class="dialogButtonsContainer">
                 <button type="submit">Add Item</button>
                 <button type="button" id="cancelAddBtn">Cancel</button>
             </div>
@@ -75,8 +75,8 @@
                 Unit Price:
                 <input type="number" id="editItemPrice" step="0.01" min="0.01" required>
             </label>
-            <div class="container">
-                <button type="submit">Save Changes</button>
+            <div class="dialogButtonsContainer">
+                <button type="submit" >Save Changes</button>
                 <button type="button" id="cancelEditBtn">Cancel</button>
             </div>
         </form>
