@@ -21,9 +21,12 @@ function generateReceipt(items) {
             <td>${item.unitPrice.toFixed(2)} zł</td>
             <td>${totalPrice.toFixed(2)} zł</td>
             <td>
-            <span class="material-symbols-outlined"edit</span>
-                <button onclick="editItem(${index})">Edit</button>
-                <button onclick="deleteItem(${index})">Delete</button>
+                <span class="material-symbols-outlined" style="cursor: pointer;" onclick="editItem(${index})">
+                    edit
+                </span>
+                <span class="material-symbols-outlined" style="cursor: pointer; color: red;" onclick="deleteItem(${index})">
+                    delete
+                </span>
             </td>
         `;
 
@@ -61,7 +64,7 @@ function editItem(index) {
     document.getElementById("itemQuantity").value = item.quantity;
     document.getElementById("itemPrice").value = item.unitPrice;
 
-    // deleteItem(index); // Usuwamy starą wersję
+    deleteItem(index); // Usuwamy starą wersję
 }
 
 // Funkcja usuwająca element
