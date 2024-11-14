@@ -1,44 +1,56 @@
+const apiUrl = "http://localhost:3000/items"; 
 
-let receiptItems = JSON.parse(localStorage.getItem("receiptItems")) || [];
-let currentEditIndex = null;
+function generateReceipt() {
+    fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => {
+            console.log("Received data:", data); // Log the data to inspect its structure
 
+            // Check if the response is an array
+            if (!Array.isArray(data)) {
+                console.error("Data is not an array", data);
+                return; // Exit early if data is not an array
+            }
 
-function generateReceipt(items) {
-    const tableBody = document.querySelector("#receiptTable tbody");
-    tableBody.innerHTML = ""; 
-    let totalAmount = 0;
+            const tableBody = document.querySelector("#receiptTable tbody");
+            tableBody.innerHTML = ""; 
+            let totalAmount = 0;
 
-    items.forEach((item, index) => {
-        const totalPrice = item.quantity * item.unitPrice;
-        totalAmount += totalPrice;
+            // Loop through the items array
+            data.forEach((item, index) => {
+                const totalPrice = item.quantity * item.unitPrice;
+                totalAmount += totalPrice;
 
-        
-        const row = document.createElement("tr");
+                const row = document.createElement("tr");
 
-        row.innerHTML = `
-            <td>${index + 1}</td>
-            <td>${item.name}</td>
-            <td>${item.quantity}</td>
-            <td>${item.unitPrice.toFixed(2)} zł</td>
-            <td>${totalPrice.toFixed(2)} zł</td>
-            <td>
-                <span class="material-symbols-outlined" style="cursor: pointer;" onclick="editItem(${index})">
-                    edit
-                </span>
-                <span class="material-symbols-outlined" style="cursor: pointer;" onclick="showDeleteDialog(${index})">
-                    delete
-                </span>
-            </td>
-        `;
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${item.name}</td>
+                    <td>${item.quantity}</td>
+                    <td>${item.unitPrice.toFixed(2)} zł</td>
+                    <td>${totalPrice.toFixed(2)} zł</td>
+                    <td>
+                        <span class="material-symbols-outlined" style="cursor: pointer;" onclick="editItem('${item.id}')">
+                            edit
+                        </span>
+                        <span class="material-symbols-outlined" style="cursor: pointer;" onclick="deleteItem('${item.id}')">
+                            delete
+                        </span>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
 
-        tableBody.appendChild(row);
-    });
-
-    
-    document.getElementById("totalAmount").textContent = totalAmount.toFixed(2) + " zł";
+            document.getElementById("totalAmount").textContent = totalAmount.toFixed(2) + " zł";
+        })
+        .catch(error => {
+            console.error("Error fetching data:", error);
+        });
 }
 
 
+
+// Funkcja dodająca nowy element
 function addItem(event) {
     event.preventDefault();
 
@@ -46,106 +58,136 @@ function addItem(event) {
     const itemQuantity = parseFloat(document.getElementById("itemQuantity").value);
     const itemPrice = parseFloat(document.getElementById("itemPrice").value);
 
-    if (itemQuantity <= 0 || itemPrice <= 0) {
-        alert("Quantity and price must be greater than zero!");
+    // Validation checks
+    if (!itemName || isNaN(itemQuantity) || isNaN(itemPrice) || itemQuantity <= 0 || itemPrice <= 0) {
+        alert("Please provide valid input for all fields.");
         return;
     }
 
-    receiptItems.push({
+    const newItem = {
         name: itemName,
         quantity: itemQuantity,
         unitPrice: itemPrice
+    };
+
+    // Log the new item to verify it is correct
+    console.log("New Item:", newItem);
+
+    // Make POST request to add new item
+    fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(newItem)
+    })
+    .then(response => {
+        if (!response.ok) {
+            console.error('Failed to add item:', response.statusText);
+            throw new Error('Failed to add item');
+        }
+        return response.json();
+    })
+    .then((data) => {
+        console.log("Added item:", data);
+        generateReceipt(); // Update the receipt with the new item
+        document.getElementById("addDialog").close(); // Close the add dialog
+    })
+    .catch(error => {
+        console.error('Error:', error);
     });
-
-    updateLocalStorage();
-    generateReceipt(receiptItems);
-    document.getElementById("addItemForm").reset(); 
-    document.getElementById("addDialog").close(); 
 }
 
+// Funkcja edytująca istniejący element
+function editItem(itemId) {
+    // Pobierz dane elementu z serwera
+    fetch(`${apiUrl}/${itemId}`)
+        .then(response => response.json())
+        .then(item => {
+            // Wypełnij formularz danymi elementu
+            document.getElementById("editItemName").value = item.name;
+            document.getElementById("editItemQuantity").value = item.quantity;
+            document.getElementById("editItemPrice").value = item.unitPrice;
 
-function editItem(index) {
-    const item = receiptItems[index];
-
-    document.getElementById("editItemName").value = item.name;
-    document.getElementById("editItemQuantity").value = item.quantity;
-    document.getElementById("editItemPrice").value = item.unitPrice;
-
-    currentEditIndex = index;
-
-   
-    document.getElementById("editDialog").showModal();
+            // Przypisz id edytowanego elementu do ukrytego pola (np. w formularzu)
+            document.getElementById("editDialog").showModal(); // Otwórz okno dialogowe do edycji
+            currentEditItemId = itemId; // Przechowuj id edytowanego elementu
+        });
 }
 
+// Funkcja aktualizująca edytowany element
+function updateItem(event) {
+    event.preventDefault(); // Zapobiegaj domyślnemu działaniu formularza
 
-function saveEdit(event) {
-    event.preventDefault();
+    const itemName = document.getElementById("editItemName").value;
+    const itemQuantity = parseFloat(document.getElementById("editItemQuantity").value);
+    const itemPrice = parseFloat(document.getElementById("editItemPrice").value);
 
-    const editedName = document.getElementById("editItemName").value;
-    const editedQuantity = parseFloat(document.getElementById("editItemQuantity").value);
-    const editedPrice = parseFloat(document.getElementById("editItemPrice").value);
-
-    if (editedQuantity <= 0 || editedPrice <= 0) {
-        alert("Quantity and price must be greater than zero!");
-        return;
-    }
-
-    receiptItems[currentEditIndex] = {
-        name: editedName,
-        quantity: editedQuantity,
-        unitPrice: editedPrice
+    const updatedItem = {
+        name: itemName,
+        quantity: itemQuantity,
+        unitPrice: itemPrice
     };
 
-    updateLocalStorage();
-    generateReceipt(receiptItems);
-    document.getElementById("editDialog").close(); 
+    // Wykonaj zapytanie PUT, aby zaktualizować produkt
+    fetch(`${apiUrl}/${currentEditItemId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(updatedItem)
+    })
+    .then(response => response.json())
+    .then(() => {
+        generateReceipt(); // Zaktualizuj tabelę
+        document.getElementById("editDialog").close(); // Zamknij dialog
+    });
 }
 
+// Funkcja usuwająca element
+function deleteItem(itemId) {
+    // Show the confirmation dialog
+    document.getElementById("deleteDialog").showModal();
 
-function cancelEdit() {
-    document.getElementById("editDialog").close(); 
-}
-
-
-function showDeleteDialog(index) {
-    const deleteDialog = document.getElementById("deleteDialog");
-    deleteDialog.showModal();
-
-  
-    document.getElementById("confirmDeleteBtn").onclick = function() {
-        deleteItem(index);
-        deleteDialog.close();
+    // Add event listeners for the buttons inside the dialog
+    document.getElementById("confirmDeleteBtn").onclick = () => {
+        // If the user confirms, delete the item
+        fetch(`${apiUrl}/${itemId}`, {
+            method: 'DELETE'
+        })
+        .then(() => {
+            generateReceipt(); // Update the receipt after deletion
+            document.getElementById("deleteDialog").close(); // Close the confirmation dialog
+        })
+        .catch(error => {
+            console.error("Error deleting item:", error);
+            document.getElementById("deleteDialog").close(); // Close the dialog even if an error occurs
+        });
     };
 
-    document.getElementById("cancelDeleteBtn").onclick = function() {
-        deleteDialog.close();
+    document.getElementById("cancelDeleteBtn").onclick = () => {
+        // If the user cancels, just close the dialog
+        document.getElementById("deleteDialog").close();
     };
 }
 
-function deleteItem(index) {
-    receiptItems.splice(index, 1);
-    updateLocalStorage();
-    generateReceipt(receiptItems);
-}
 
-
-function updateLocalStorage() {
-    localStorage.setItem("receiptItems", JSON.stringify(receiptItems));
-}
-
-
-document.getElementById("addItemForm").addEventListener("submit", addItem);
-document.getElementById("editForm").addEventListener("submit", saveEdit);
-document.getElementById("cancelEditBtn").addEventListener("click", cancelEdit);
-
-
-document.getElementById("addItemBtn").addEventListener("click", () => {
-    document.getElementById("addDialog").showModal();
-});
-
-
+// Funkcja obsługująca anulowanie dodawania elementu
 document.getElementById("cancelAddBtn").addEventListener("click", () => {
-    document.getElementById("addDialog").close(); // Zamknij dialog
+    document.getElementById("addDialog").close(); // Zamknięcie dialogu bez dodawania
 });
 
-window.addEventListener("load", () => generateReceipt(receiptItems));
+// Funkcja uruchamiająca otwieranie okna dialogowego do dodawania
+document.getElementById("addItemBtn").addEventListener("click", () => {
+    document.getElementById("addDialog").showModal(); // Otwórz dialog do dodawania elementu
+});
+
+// Funkcja uruchamiająca otwieranie okna dialogowego do edytowania
+document.getElementById("editForm").addEventListener("submit", (event) => {
+    updateItem(event); // Jeśli edytujemy, wykonaj update
+});
+
+// Przechowywanie id edytowanego elementu
+let currentEditItemId = null;
+
+window.addEventListener("load", generateReceipt);

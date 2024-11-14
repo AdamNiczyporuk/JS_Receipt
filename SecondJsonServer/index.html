@@ -39,26 +39,27 @@
     </div>
     
     <!-- Dialog do dodawania elementów -->
-    <dialog id="addDialog">
-        <form id="addItemForm">
-            <label>
-                Item:
-                <input type="text" id="itemName" required>
-            </label>
-            <label>
-                Quantity:
-                <input type="number" id="itemQuantity" step="0.1" min="0.1" required>
-            </label>
-            <label>
-                Unit Price:
-                <input type="number" id="itemPrice" step="0.01" min="0.01" required>
-            </label>
-            <div class="dialogButtonsContainer">
-                <button type="submit">Add Item</button>
-                <button type="button" id="cancelAddBtn">Cancel</button>
-            </div>
-        </form>
-    </dialog>
+<dialog id="addDialog">
+    <form id="addItemForm" onsubmit="addItem(event)">
+        <label>
+            Item:
+            <input type="text" id="itemName" required>
+        </label>
+        <label>
+            Quantity:
+            <input type="number" id="itemQuantity" step="0.1" min="0.1" required>
+        </label>
+        <label>
+            Unit Price:
+            <input type="number" id="itemPrice" step="0.01" min="0.01" required>
+        </label>
+        <div class="dialogButtonsContainer">
+            <button type="submit">Add Item</button>
+            <button type="button" id="cancelAddBtn">Cancel</button>
+        </div>
+    </form>
+</dialog>
+
 
     <!-- Dialog do edycji elementów -->
     <dialog id="editDialog">
