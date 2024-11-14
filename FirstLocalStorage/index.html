@@ -3,31 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <link rel="stylesheet" href="data.css" type="text/css" />
     <title>Paragon</title>
 </head>
 <body>
     <h2>Paragon</h2>
-    <table id="receiptTable" border="1" cellpadding="8">
-        <thead>
-            <tr>
-                <th>Index</th>
-                <th>Item</th>
-                <th>Quantity</th>
-                <th>Unit Price</th>
-                <th>Total Price</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Pozycje paragonu zostaną wygenerowane dynamicznie tutaj -->
-        </tbody>
-        <tfoot>
-            <tr>
-                <td colspan="4" style="text-align:right;">ALL:</td>
-                <td id="totalAmount"><strong>0.00 zł</strong></td>
-            </tr>
-        </tfoot>
-    </table>
+    <div class ="Itemcontainer">
+        <form id="addItemForm">
+            <label>
+                Item:
+                <input type="text" id="itemName" required>
+            </label>
+            <label>
+                Quantity:
+                <input type="number" id="itemQuantity" step="0.1" min="0.1" required>
+            </label>
+            <label>
+                Unit Price:
+                <input type="number" id="itemPrice" step="0.01" min="0.01" required>
+            </label>
+            <button type="submit">Add Item</button>
+        </form>
+    </div>
+    <div class="container">
+        <table id="receiptTable" border="1" cellpadding="8">
+            <thead>
+                <tr>
+                    <th>Index</th>
+                    <th>Item</th>
+                    <th>Quantity</th>
+                    <th>Unit Price</th>
+                    <th>Total Price</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Pozycje paragonu zostaną wygenerowane dynamicznie tutaj -->
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="5" style="text-align:right;">ALL:</td>
+                    <td id="totalAmount"><strong>0.00 zł</strong></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
     <script src="data.js"></script>
 </body>
 </html>
