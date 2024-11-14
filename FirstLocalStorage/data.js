@@ -1,18 +1,18 @@
-// Inicjalizacja paragonu z localStorage
+
 let receiptItems = JSON.parse(localStorage.getItem("receiptItems")) || [];
 let currentEditIndex = null;
 
-// Funkcja generująca paragon
+
 function generateReceipt(items) {
     const tableBody = document.querySelector("#receiptTable tbody");
-    tableBody.innerHTML = ""; // Wyczyść istniejący widok
+    tableBody.innerHTML = ""; 
     let totalAmount = 0;
 
     items.forEach((item, index) => {
         const totalPrice = item.quantity * item.unitPrice;
         totalAmount += totalPrice;
 
-        // Tworzenie wiersza tabeli
+        
         const row = document.createElement("tr");
 
         row.innerHTML = `
@@ -34,11 +34,11 @@ function generateReceipt(items) {
         tableBody.appendChild(row);
     });
 
-    // Wyświetlenie łącznej kwoty
+    
     document.getElementById("totalAmount").textContent = totalAmount.toFixed(2) + " zł";
 }
 
-// Funkcja dodająca nowy element
+
 function addItem(event) {
     event.preventDefault();
 
@@ -59,11 +59,11 @@ function addItem(event) {
 
     updateLocalStorage();
     generateReceipt(receiptItems);
-    document.getElementById("addItemForm").reset(); // Resetuj formularz
-    document.getElementById("addDialog").close(); // Zamknij dialog
+    document.getElementById("addItemForm").reset(); 
+    document.getElementById("addDialog").close(); 
 }
 
-// Funkcja edytująca istniejący element
+
 function editItem(index) {
     const item = receiptItems[index];
 
@@ -73,11 +73,11 @@ function editItem(index) {
 
     currentEditIndex = index;
 
-    // Otwórz dialog
+   
     document.getElementById("editDialog").showModal();
 }
 
-// Funkcja zapisująca zmiany w edytowanym elemencie
+
 function saveEdit(event) {
     event.preventDefault();
 
@@ -98,54 +98,52 @@ function saveEdit(event) {
 
     updateLocalStorage();
     generateReceipt(receiptItems);
-    document.getElementById("editDialog").close(); // Zamknij dialog
+    document.getElementById("editDialog").close(); 
 }
 
-// Funkcja anulująca edycję
+
 function cancelEdit() {
-    document.getElementById("editDialog").close(); // Zamknij dialog
+    document.getElementById("editDialog").close(); 
 }
 
-// Funkcja wyświetlająca dialog usuwania
+
 function showDeleteDialog(index) {
     const deleteDialog = document.getElementById("deleteDialog");
     deleteDialog.showModal();
 
-    // Obsługa potwierdzenia usunięcia
+  
     document.getElementById("confirmDeleteBtn").onclick = function() {
         deleteItem(index);
         deleteDialog.close();
     };
 
-    // Obsługa anulowania usunięcia
     document.getElementById("cancelDeleteBtn").onclick = function() {
         deleteDialog.close();
     };
 }
 
-// Funkcja usuwająca element
 function deleteItem(index) {
     receiptItems.splice(index, 1);
     updateLocalStorage();
     generateReceipt(receiptItems);
 }
 
-// Funkcja aktualizująca dane w localStorage
+
 function updateLocalStorage() {
     localStorage.setItem("receiptItems", JSON.stringify(receiptItems));
 }
 
-// Inicjalizacja
+
 document.getElementById("addItemForm").addEventListener("submit", addItem);
 document.getElementById("editForm").addEventListener("submit", saveEdit);
 document.getElementById("cancelEditBtn").addEventListener("click", cancelEdit);
 
-// Otwórz dialog do dodania produktu po kliknięciu w ikonkę "+"
+
 document.getElementById("addItemBtn").addEventListener("click", () => {
     document.getElementById("addDialog").showModal();
 });
 
-// Anulowanie dodawania produktu
+
 document.getElementById("cancelAddBtn").addEventListener("click", () => {
     document.getElementById("addDialog").close(); // Zamknij dialog
 });
