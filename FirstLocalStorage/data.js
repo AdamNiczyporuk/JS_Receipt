@@ -1,6 +1,6 @@
 // Inicjalizacja paragonu z localStorage
 let receiptItems = JSON.parse(localStorage.getItem("receiptItems")) || [];
-let currentEditIndex = null;  // Dodajemy zmienną do śledzenia edytowanego elementu
+let currentEditIndex = null;
 
 // Funkcja generująca paragon
 function generateReceipt(items) {
@@ -25,7 +25,7 @@ function generateReceipt(items) {
                 <span class="material-symbols-outlined" style="cursor: pointer;" onclick="editItem(${index})">
                     edit
                 </span>
-                <span class="material-symbols-outlined" style="cursor: pointer;" onclick="deleteItem(${index})">
+                <span class="material-symbols-outlined" style="cursor: pointer;" onclick="showDeleteDialog(${index})">
                     delete
                 </span>
             </td>
@@ -46,28 +46,16 @@ function addItem(event) {
     const itemQuantity = parseFloat(document.getElementById("itemQuantity").value);
     const itemPrice = parseFloat(document.getElementById("itemPrice").value);
 
-    // Walidacja danych
-    if (itemName === "" || isNaN(itemQuantity) || isNaN(itemPrice)) {
-        alert("Wszystkie pola muszą być poprawnie wypełnione.");
+    if (itemQuantity <= 0 || itemPrice <= 0) {
+        alert("Quantity and price must be greater than zero!");
         return;
     }
 
-    if (currentEditIndex !== null) {
-        // Jeśli edytujemy element, to go aktualizujemy
-        receiptItems[currentEditIndex] = {
-            name: itemName,
-            quantity: itemQuantity,
-            unitPrice: itemPrice
-        };
-        currentEditIndex = null; // Resetujemy indeks edytowanego elementu
-    } else {
-        // Dodajemy nowy element
-        receiptItems.push({
-            name: itemName,
-            quantity: itemQuantity,
-            unitPrice: itemPrice
-        });
-    }
+    receiptItems.push({
+        name: itemName,
+        quantity: itemQuantity,
+        unitPrice: itemPrice
+    });
 
     updateLocalStorage();
     generateReceipt(receiptItems);
@@ -78,13 +66,60 @@ function addItem(event) {
 function editItem(index) {
     const item = receiptItems[index];
 
-    // Ustawiamy wartości w formularzu na podstawie elementu, który edytujemy
-    document.getElementById("itemName").value = item.name;
-    document.getElementById("itemQuantity").value = item.quantity;
-    document.getElementById("itemPrice").value = item.unitPrice;
+    document.getElementById("editItemName").value = item.name;
+    document.getElementById("editItemQuantity").value = item.quantity;
+    document.getElementById("editItemPrice").value = item.unitPrice;
 
-    // Ustawiamy indeks edytowanego elementu
     currentEditIndex = index;
+
+    // Otwórz dialog
+    document.getElementById("editDialog").showModal();
+}
+
+// Funkcja zapisująca zmiany w edytowanym elemencie
+function saveEdit(event) {
+    event.preventDefault();
+
+    const editedName = document.getElementById("editItemName").value;
+    const editedQuantity = parseFloat(document.getElementById("editItemQuantity").value);
+    const editedPrice = parseFloat(document.getElementById("editItemPrice").value);
+
+    if (editedQuantity <= 0 || editedPrice <= 0) {
+        alert("Quantity and price must be greater than zero!");
+        return;
+    }
+
+    receiptItems[currentEditIndex] = {
+        name: editedName,
+        quantity: editedQuantity,
+        unitPrice: editedPrice
+    };
+
+    updateLocalStorage();
+    generateReceipt(receiptItems);
+    document.getElementById("editDialog").close(); // Zamknij dialog
+}
+
+// Funkcja anulująca edycję
+function cancelEdit() {
+    document.getElementById("editDialog").close(); // Zamknij dialog
+}
+
+// Funkcja wyświetlająca dialog usuwania
+function showDeleteDialog(index) {
+    const deleteDialog = document.getElementById("deleteDialog");
+    deleteDialog.showModal();
+
+    // Obsługa potwierdzenia usunięcia
+    document.getElementById("confirmDeleteBtn").onclick = function() {
+        deleteItem(index);
+        deleteDialog.close();
+    };
+
+    // Obsługa anulowania usunięcia
+    document.getElementById("cancelDeleteBtn").onclick = function() {
+        deleteDialog.close();
+    };
 }
 
 // Funkcja usuwająca element
@@ -101,4 +136,6 @@ function updateLocalStorage() {
 
 // Inicjalizacja
 document.getElementById("addItemForm").addEventListener("submit", addItem);
+document.getElementById("editForm").addEventListener("submit", saveEdit);
+document.getElementById("cancelEditBtn").addEventListener("click", cancelEdit);
 window.addEventListener("load", () => generateReceipt(receiptItems));
