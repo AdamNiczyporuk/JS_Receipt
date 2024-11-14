@@ -7,12 +7,16 @@ function generateReceipt(items) {
     const tableBody = document.querySelector("#receiptTable tbody");
     let totalAmount = 0;
 
-    items.forEach(item => {
+    items.forEach((item,index) => {
         const totalPrice = item.quantity * item.unitPrice;
         totalAmount += totalPrice;
 
         // Tworzenie wiersza tabeli
         const row = document.createElement("tr");
+
+        const IndexCell = document.createElement("td");
+        IndexCell.textContent = index + 1;
+        row.appendChild(IndexCell);
 
         const itemNameCell = document.createElement("td");
         itemNameCell.textContent = item.name;
