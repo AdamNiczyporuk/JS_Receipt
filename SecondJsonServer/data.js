@@ -1,9 +1,16 @@
 const apiUrl = "http://localhost:3000/items"; 
 
 function generateReceipt() {
-    fetch(apiUrl)
-        .then(response => response.json())
-        .then(data => {
+    fetch(apiUrl,
+        {
+            method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        }
+    }
+    ).then(response => response.json())
+    .then(data => {
             console.log("Received data:", data); // Log the data to inspect its structure
 
             // Check if the response is an array

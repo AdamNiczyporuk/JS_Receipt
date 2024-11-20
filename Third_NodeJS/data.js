@@ -1,6 +1,6 @@
 const apiUrl = "http://localhost:3000/items";
 
-// Funkcja generująca paragon
+
 function generateReceipt() {
     fetch(apiUrl)
         .then(response => response.json())
@@ -17,10 +17,10 @@ function generateReceipt() {
             let totalAmount = 0;
 
             data.forEach((item, index) => {
-                // Używamy klucza price lub unitPrice w zależności od tego, który istnieje
+               
                 const price = item.unitPrice !== undefined ? item.unitPrice : item.price;
             
-                // Jeśli cena jest poprawna, obliczamy całkowitą cenę
+             
                 if (price !== undefined && !isNaN(price)) {
                     const totalPrice = item.quantity * price;
                     totalAmount += totalPrice;
@@ -51,7 +51,7 @@ function generateReceipt() {
         });
 }
 
-// Funkcja dodająca nowy element
+
 function addItem(event) {
     event.preventDefault();
 
@@ -92,10 +92,10 @@ function addItem(event) {
 }
 
 function editItem(itemId) {
-    fetch(apiUrl)  // Pobieramy wszystkie elementy
+    fetch(apiUrl)  
         .then(response => response.json())
         .then(data => {
-            // Szukamy elementu o podanym id
+
             const item = data.find(i => i.id === itemId);
             console.log(item);
             if (!item) {
@@ -103,21 +103,21 @@ function editItem(itemId) {
                 return;
             }
 
-            // Ustawiamy wartości w formularzu edycji
+            
             document.getElementById("editItemName").value = item.name;
             document.getElementById("editItemQuantity").value = item.quantity;
             document.getElementById("editItemPrice").value = item.unitPrice;
 
-            // Otwieramy dialog edycji
+         
             document.getElementById("editDialog").showModal();
-            currentEditItemId = itemId; // Ustawiamy ID edytowanego elementu
+            currentEditItemId = itemId; 
         })
         .catch(error => {
             console.error("Error fetching data:", error);
         });
 }
 
-// Funkcja aktualizująca edytowany element
+
 function updateItem(event) {
     event.preventDefault();
 
@@ -140,7 +140,7 @@ function updateItem(event) {
     })
     .then(response => response.json())
     .then(() => {
-        generateReceipt(); // Odświeżenie tabeli
+        generateReceipt(); 
         document.getElementById("editDialog").close();
     })
     .catch(error => {
@@ -148,7 +148,7 @@ function updateItem(event) {
     });
 }
 
-// Funkcja usuwająca element
+
 function deleteItem(itemId) {
     document.getElementById("deleteDialog").showModal();
 
@@ -169,22 +169,22 @@ function deleteItem(itemId) {
     };
 }
 
-// Funkcja obsługująca anulowanie dodawania elementu
+
 document.getElementById("cancelAddBtn").addEventListener("click", () => {
     document.getElementById("addDialog").close();
 });
 
-// Funkcja uruchamiająca otwieranie okna dialogowego do dodawania
+
 document.getElementById("addItemBtn").addEventListener("click", () => {
     document.getElementById("addDialog").showModal();
 });
 
-// Funkcja uruchamiająca otwieranie okna dialogowego do edytowania
+
 document.getElementById("editForm").addEventListener("submit", (event) => {
     updateItem(event);
 });
 
-// Przechowywanie id edytowanego elementu
+
 let currentEditItemId = null;
 
 window.addEventListener("load", generateReceipt);
