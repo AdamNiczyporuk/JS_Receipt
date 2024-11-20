@@ -11,7 +11,7 @@ function generateReceipt() {
     }
     ).then(response => response.json())
     .then(data => {
-            console.log("Received data:", data); // Log the data to inspect its structure
+            console.log("Received data:", data); 
 
             // Check if the response is an array
             if (!Array.isArray(data)) {
@@ -57,7 +57,7 @@ function generateReceipt() {
 
 
 
-// Funkcja dodająca nowy element
+
 function addItem(event) {
     event.preventDefault();
 
@@ -65,7 +65,7 @@ function addItem(event) {
     const itemQuantity = parseFloat(document.getElementById("itemQuantity").value);
     const itemPrice = parseFloat(document.getElementById("itemPrice").value);
 
-    // Validation checks
+ 
     if (!itemName || isNaN(itemQuantity) || isNaN(itemPrice) || itemQuantity <= 0 || itemPrice <= 0) {
         alert("Please provide valid input for all fields.");
         return;
@@ -77,10 +77,9 @@ function addItem(event) {
         unitPrice: itemPrice
     };
 
-    // Log the new item to verify it is correct
+   
     console.log("New Item:", newItem);
 
-    // Make POST request to add new item
     fetch(apiUrl, {
         method: 'POST',
         headers: {
@@ -97,34 +96,30 @@ function addItem(event) {
     })
     .then((data) => {
         console.log("Added item:", data);
-        generateReceipt(); // Update the receipt with the new item
-        document.getElementById("addDialog").close(); // Close the add dialog
+        generateReceipt(); 
+        document.getElementById("addDialog").close(); 
     })
     .catch(error => {
         console.error('Error:', error);
     });
 }
 
-// Funkcja edytująca istniejący element
+
 function editItem(itemId) {
-    // Pobierz dane elementu z serwera
     fetch(`${apiUrl}/${itemId}`)
         .then(response => response.json())
         .then(item => {
-            // Wypełnij formularz danymi elementu
             document.getElementById("editItemName").value = item.name;
             document.getElementById("editItemQuantity").value = item.quantity;
             document.getElementById("editItemPrice").value = item.unitPrice;
-
-            // Przypisz id edytowanego elementu do ukrytego pola (np. w formularzu)
-            document.getElementById("editDialog").showModal(); // Otwórz okno dialogowe do edycji
-            currentEditItemId = itemId; // Przechowuj id edytowanego elementu
+            document.getElementById("editDialog").showModal(); 
+            currentEditItemId = itemId; 
         });
 }
 
-// Funkcja aktualizująca edytowany element
+
 function updateItem(event) {
-    event.preventDefault(); // Zapobiegaj domyślnemu działaniu formularza
+    event.preventDefault();
 
     const itemName = document.getElementById("editItemName").value;
     const itemQuantity = parseFloat(document.getElementById("editItemQuantity").value);
@@ -136,7 +131,7 @@ function updateItem(event) {
         unitPrice: itemPrice
     };
 
-    // Wykonaj zapytanie PUT, aby zaktualizować produkt
+ 
     fetch(`${apiUrl}/${currentEditItemId}`, {
         method: 'PUT',
         headers: {
@@ -146,55 +141,55 @@ function updateItem(event) {
     })
     .then(response => response.json())
     .then(() => {
-        generateReceipt(); // Zaktualizuj tabelę
-        document.getElementById("editDialog").close(); // Zamknij dialog
+        generateReceipt(); 
+        document.getElementById("editDialog").close(); 
     });
 }
 
-// Funkcja usuwająca element
+
 function deleteItem(itemId) {
-    // Show the confirmation dialog
+  
     document.getElementById("deleteDialog").showModal();
 
-    // Add event listeners for the buttons inside the dialog
+
     document.getElementById("confirmDeleteBtn").onclick = () => {
-        // If the user confirms, delete the item
+
         fetch(`${apiUrl}/${itemId}`, {
             method: 'DELETE'
         })
         .then(() => {
-            generateReceipt(); // Update the receipt after deletion
-            document.getElementById("deleteDialog").close(); // Close the confirmation dialog
+            generateReceipt(); 
+            document.getElementById("deleteDialog").close(); 
         })
         .catch(error => {
             console.error("Error deleting item:", error);
-            document.getElementById("deleteDialog").close(); // Close the dialog even if an error occurs
+            document.getElementById("deleteDialog").close(); 
         });
     };
 
     document.getElementById("cancelDeleteBtn").onclick = () => {
-        // If the user cancels, just close the dialog
+       
         document.getElementById("deleteDialog").close();
     };
 }
 
 
-// Funkcja obsługująca anulowanie dodawania elementu
+
 document.getElementById("cancelAddBtn").addEventListener("click", () => {
-    document.getElementById("addDialog").close(); // Zamknięcie dialogu bez dodawania
+    document.getElementById("addDialog").close(); 
 });
 
-// Funkcja uruchamiająca otwieranie okna dialogowego do dodawania
+
 document.getElementById("addItemBtn").addEventListener("click", () => {
-    document.getElementById("addDialog").showModal(); // Otwórz dialog do dodawania elementu
+    document.getElementById("addDialog").showModal(); 
 });
 
-// Funkcja uruchamiająca otwieranie okna dialogowego do edytowania
+
 document.getElementById("editForm").addEventListener("submit", (event) => {
-    updateItem(event); // Jeśli edytujemy, wykonaj update
+    updateItem(event); 
 });
 
-// Przechowywanie id edytowanego elementu
+
 let currentEditItemId = null;
 
 window.addEventListener("load", generateReceipt);
